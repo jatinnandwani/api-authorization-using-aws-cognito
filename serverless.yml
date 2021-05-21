@@ -1,0 +1,35 @@
+service: api-authorizer
+app: middle-ware-lambda-authorizer
+org: jatin07
+
+package:
+  excludeDevDependencies: false
+
+custom:
+  account: ${opt:account,'personal'}
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region, 'us-west-2'}
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${self:custom:stage}
+  region: ${self:custom:region}
+  versionFunctions: false
+  tracing:
+    apiGateway: true
+    lambda: true
+
+  environment:
+    STAGE: {self:custom.stage}
+    ISSUERS: 'https://cognito-idp.us-west-2.amazonaws.com/ {POOL ID }'
+
+functions:
+  api_authorizer:
+    handler: src/handler.authorizer
+    description: MIDDLE WARE LAMBDA FUNCTION FOR API AUTHENTICATION
+
+plugins:
+  - serverless-pseudo-parameters
